@@ -24,51 +24,94 @@ Student IDs are stored in uppercase. Semester choices are 1–8; year choices ar
 - `server/` — Express API, authentication, and student validation.
 - `server/.env.example` — configuration template without credentials.
 
-## Run locally
+## First-time setup
 
-Use Node.js 24 LTS and a MongoDB database.
+You need Node.js 24 LTS, a MongoDB Atlas account, and an internet connection.
 
-1. In MongoDB Atlas, create a database user and allow your development machine's IP address.
-2. Open a terminal in `server` and install its dependencies:
+### 1. Open the project
 
-   ```powershell
-   npm.cmd install
-   Copy-Item .env.example .env
-   ```
+Download or clone this repository, then open its main folder in VS Code. You should see the `client` and `server` folders.
 
-3. Edit `server/.env` with your MongoDB connection string. URL-encode special characters in the database password. Generate a session secret:
+### 2. Connect your database
 
-   ```powershell
-   node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
-   ```
+In MongoDB Atlas:
 
-   Put the generated value after `SESSION_SECRET=` in `.env`.
+- Create a free cluster and a database user.
+- Add your current IP address under Network Access.
+- Choose **Connect → Drivers → Node.js** and copy the connection string.
 
-4. From `server`, start Express:
+Inside the project's `server` folder, copy `.env.example` and rename the copy to `.env`. If you already have a working `.env`, keep it and skip this step.
 
-   ```powershell
-   npm.cmd run dev
-   ```
+Fill in these three settings:
 
-5. Open another terminal in `client`:
+```env
+MONGODB_URI="YOUR_MONGODB_CONNECTION_STRING"
+PORT=5000
+SESSION_SECRET=YOUR_RANDOM_SECRET
+```
 
-   ```powershell
-   npm.cmd install
-   npm.cmd run dev
-   ```
+For the MongoDB connection string, use your database user's password and add `student_management` after the hostname's `/`, before any `?` options. Special characters in the password must be URL-encoded; for example, `%` becomes `%25`.
 
-6. Open the Local URL printed by Vite, normally `http://localhost:5173`. Vite forwards `/api` requests to Express on port 5000. Keep both terminals running.
+To generate a random session secret, run this in a terminal:
 
-## Admin setup
+```powershell
+node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
+```
 
-Registration creates a User account. To set up your own Admin account:
+Copy its output into `SESSION_SECRET`. Keep `.env` private.
 
-1. Register in the application.
-2. In Atlas Data Explorer, open `student_management` → `users`.
-3. Find your account by email and change its `role` from `user` to `admin`.
-4. Refresh the application.
+### 3. Start the backend — Terminal 1
 
-This application role is separate from the Atlas database user's permissions. Existing student records without the newer fields can be updated through Edit Student.
+Open a terminal in the main project folder and run:
+
+```powershell
+cd server
+npm.cmd install
+npm.cmd run dev
+```
+
+Wait for **MongoDB connected successfully** and **Server running at http://localhost:5000**. Leave this terminal running.
+
+### 4. Start the frontend — Terminal 2
+
+Open a second terminal in the main project folder and run:
+
+```powershell
+cd client
+npm.cmd install
+npm.cmd run dev
+```
+
+Open the **Local** URL it prints, normally **http://localhost:5173/**. Keep both terminals running.
+
+## Starting again later
+
+Once setup is complete, you only need these commands. Start each terminal in the main project folder.
+
+**Terminal 1 — Backend**
+
+```powershell
+cd server
+npm.cmd run dev
+```
+
+**Terminal 2 — Frontend**
+
+```powershell
+cd client
+npm.cmd run dev
+```
+
+Open the frontend's Local URL. You do not need to reinstall packages or recreate `.env` each time. To stop either server, press **Ctrl+C**.
+
+## Make your account an Admin
+
+1. Register through the app. New accounts start as Users.
+2. In MongoDB Atlas, open **Data Explorer → student_management → users**.
+3. Find your account by email. Edit its `role` from `user` to `admin` and save.
+4. Refresh the app.
+
+Users can view and search students. Admins can also add, edit, and delete them. This role belongs to the app and is separate from your Atlas database user's permissions.
 
 ## Checks
 
