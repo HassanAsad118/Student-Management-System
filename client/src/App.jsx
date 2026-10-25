@@ -30,7 +30,7 @@ function StudentDashboard({ user }) {
   const [page, setPage] = useState(1);
   const pageSize = 5;
   const [sevenDaysAgo] = useState(
-  () => Date.now() - 7 * 24 * 60 * 60 * 1000
+    () => Date.now() - 7 * 24 * 60 * 60 * 1000
   );
   const [loadError, setLoadError] = useState("");
   const [showForm, setShowForm] = useState(false);
